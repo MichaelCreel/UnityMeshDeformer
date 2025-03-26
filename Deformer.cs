@@ -21,15 +21,28 @@ public class Deformer : MonoBehaviour
 
     }
 
-    public void DeformVertex(Vector3 force, Collider collider, ContactPoint contact, float deformResistance)
+    public void DeformVertex(Vector3 force, MeshCollider collider, Mesh mesh, ContactPoint contact, float deformResistance, float buffer)
     {
-        Debug.Log("Deformer Ran");
-        Vector3 vertexPos = collider.ClosestPointOnBounds(contact.point);
+        Vector3[] vertices = new Vector3[mesh.vertices.Length];
+        vertices = mesh.vertices;
 
-        vertexPos += force/deformResistance;
+        Vector3 vertexPos = collider.ClosestPoint(contact.point);
 
-        Vector3 closestPoint = collider.ClosestPoint(contact.point); //TODO Find vertex nearest to contact point.
+        vertexPos += force / deformResistance / -10000;
 
-        Debug.Log(closestPoint);
+        Vector3 closestPoint = collider.ClosestPoint(contact.point);
+
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            if (Mathf.Abs(Vector3.Distance(vertices[i], closestPoint)) < buffer)
+            {
+                vertices[i] = vertexPos;
+                mesh.vertices = vertices;
+                mesh.RecalculateBounds();
+                mesh.RecalculateNormals();
+                collider.sharedMesh = mesh;
+                break;
+            }
+        }
     }
 }

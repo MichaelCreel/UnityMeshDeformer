@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class CollisionChecker : MonoBehaviour
 {
-    [SerializeField] private float deformResistance;
+    [SerializeField] private float deformResistance = 100;
 
-    private Collider collider;
+    private MeshCollider collider;
+
+    private Mesh mesh;
 
     private void Start()
     {
-        collider = GetComponent<Collider>();
+        collider = GetComponent<MeshCollider>();
+
+        mesh = GetComponent<MeshFilter>().mesh;
     }
 
     public void OnCollisionEnter(Collision collision)
@@ -20,9 +24,10 @@ public class CollisionChecker : MonoBehaviour
         foreach (ContactPoint contact in contactPoints)
         {
             Vector3 force = contact.impulse / Time.fixedDeltaTime;
-            if (force.magnitude > 5)
+            Debug.Log(force.magnitude);
+            if (force.magnitude > 5000)
             {
-                FindObjectOfType<Deformer>().DeformVertex(force, collider, contact, deformResistance);
+                FindObjectOfType<Deformer>().DeformVertex(force, collider, mesh, contact, deformResistance, 0.5f);
             }
         }
     }
