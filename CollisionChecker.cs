@@ -19,16 +19,20 @@ public class CollisionChecker : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        ContactPoint[] contactPoints = collision.contacts;
-
-        foreach (ContactPoint contact in contactPoints)
+        /*Debug.Log(collision.contactCount);
+        foreach (ContactPoint contact in collision.contacts)
         {
             Vector3 force = contact.impulse / Time.fixedDeltaTime;
-            Debug.Log(force.magnitude);
             if (force.magnitude > 5000)
             {
                 FindObjectOfType<Deformer>().DeformVertex(force, collider, mesh, contact, deformResistance, 0.5f);
             }
+        }*/
+
+        if ((collision.impulse / Time.fixedDeltaTime).magnitude > 5000)
+        {
+            Debug.Log(collision.contactCount);
+            FindObjectOfType<Deformer>().Deform(collision.impulse / Time.fixedDeltaTime, collider, mesh, collision.contacts, deformResistance, 0.5f);
         }
     }
 }
