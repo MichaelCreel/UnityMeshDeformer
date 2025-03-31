@@ -13,10 +13,9 @@ public class Deformer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
     }
 
-    public void Deform(Vector3 force, MeshCollider collider, Mesh mesh, ContactPoint[] contacts, float deformResistance, float buffer)
+    public void Deform(MeshCollider collider, Mesh mesh, ContactPoint[] contacts, float deformResistance, float buffer, float radius)
     {
         Vector3[] vertices = new Vector3[mesh.vertices.Length];
         vertices = mesh.vertices;
@@ -25,16 +24,21 @@ public class Deformer : MonoBehaviour
         {
             Vector3 vertexPos = collider.ClosestPoint(contact.point);
 
-            vertexPos += force / deformResistance / -10000;
+            //vertexPos += force / deformResistance / -10000;
+            Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000;
+            vertexPos += change;
 
             Vector3 closestPoint = collider.ClosestPoint(contact.point);
 
             for (int i = 0; i < vertices.Length; i++)
             {
+                float distance = Mathf.Abs(Vector3.Distance(vertices[i], closestPoint));
                 if (Mathf.Abs(Vector3.Distance(vertices[i], closestPoint)) < buffer)
                 {
                     vertices[i] = vertexPos;
-                    break;
+                } else if (distance < radius)
+                {
+                    vertices[i] += change * Mathf.Pow(radius - distance, 2) / Mathf.Pow(radius, 2);
                 }
             }
         }
@@ -45,20 +49,22 @@ public class Deformer : MonoBehaviour
         collider.sharedMesh = mesh;
     }
 
-    public void DeformVertex(Vector3 force, MeshCollider collider, Mesh mesh, ContactPoint contact, float deformResistance, float buffer)
+    public void DeformVertex(MeshCollider collider, Mesh mesh, ContactPoint contact, float deformResistance, float buffer, float radius)
     {
         Vector3[] vertices = new Vector3[mesh.vertices.Length];
         vertices = mesh.vertices;
 
         Vector3 vertexPos = collider.ClosestPoint(contact.point);
 
-        vertexPos += force / deformResistance / -10000;
+        Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000;
+        vertexPos += change;
 
         Vector3 closestPoint = collider.ClosestPoint(contact.point);
 
         for (int i = 0; i < vertices.Length; i++)
         {
-            if (Mathf.Abs(Vector3.Distance(vertices[i], closestPoint)) < buffer)
+            float distance = Mathf.Abs(Vector3.Distance(vertices[i], closestPoint));
+            if (distance < buffer)
             {
                 vertices[i] = vertexPos;
                 mesh.vertices = vertices;
@@ -66,7 +72,15 @@ public class Deformer : MonoBehaviour
                 mesh.RecalculateNormals();
                 collider.sharedMesh = mesh;
                 break;
-            }   
+            } else if (distance < radius)
+            {
+                vertices[i] += change * Mathf.Pow(radius - distance, 2) / Mathf.Pow(radius, 2);
+                mesh.vertices = vertices;
+                mesh.RecalculateBounds();
+                mesh.RecalculateNormals();
+                collider.sharedMesh = mesh;
+                break;
+            }
         }
     }
 }

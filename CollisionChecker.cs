@@ -17,6 +17,11 @@ public class CollisionChecker : MonoBehaviour
         mesh = GetComponent<MeshFilter>().mesh;
     }
 
+    public void SetDeformResistance(float resistance)
+    {
+        deformResistance = resistance;
+    }
+
     public void OnCollisionEnter(Collision collision)
     {
         /*Debug.Log(collision.contactCount);
@@ -32,7 +37,7 @@ public class CollisionChecker : MonoBehaviour
         if ((collision.impulse / Time.fixedDeltaTime).magnitude > 5000)
         {
             Debug.Log(collision.contactCount);
-            FindObjectOfType<Deformer>().Deform(collision.impulse / Time.fixedDeltaTime, collider, mesh, collision.contacts, deformResistance, 0.5f);
+            FindObjectOfType<Deformer>().Deform(collider, mesh, collision.contacts, deformResistance, 0.5f, collision.impulse.magnitude / Time.fixedDeltaTime / 1000000f);
         }
     }
 }
