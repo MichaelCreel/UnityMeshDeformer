@@ -6,14 +6,12 @@ public class CollisionChecker : MonoBehaviour
 {
     [SerializeField] private float deformResistance = 100;
 
-    private MeshCollider collider;
+    [SerializeField] private float distance = 0.5f;
 
     private Mesh mesh;
 
     private void Start()
     {
-        collider = GetComponent<MeshCollider>();
-
         mesh = GetComponent<MeshFilter>().mesh;
     }
 
@@ -22,22 +20,17 @@ public class CollisionChecker : MonoBehaviour
         deformResistance = resistance;
     }
 
+    public void SetDeformDistance(float length)
+    {
+        distance = length;
+    }
+
     public void OnCollisionEnter(Collision collision)
     {
-        /*Debug.Log(collision.contactCount);
-        foreach (ContactPoint contact in collision.contacts)
-        {
-            Vector3 force = contact.impulse / Time.fixedDeltaTime;
-            if (force.magnitude > 5000)
-            {
-                FindObjectOfType<Deformer>().DeformVertex(force, collider, mesh, contact, deformResistance, 0.5f);
-            }
-        }*/
 
         if ((collision.impulse / Time.fixedDeltaTime).magnitude > 5000)
         {
-            Debug.Log(collision.contactCount);
-            FindObjectOfType<Deformer>().Deform(collider, mesh, collision.contacts, deformResistance, 0.5f, collision.impulse.magnitude / Time.fixedDeltaTime / 1000000f);
+            FindObjectOfType<Deformer>().Deform(GetComponent<MeshCollider>(), mesh, collision.contacts, deformResistance, distance, collision.impulse.magnitude / Time.fixedDeltaTime / 10000f / deformResistance);
         }
     }
 }
