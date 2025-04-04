@@ -15,7 +15,6 @@ public class Deformer : MonoBehaviour
 
             Vector3 closestPoint = vertexPos;
 
-            //vertexPos += force / deformResistance / -10000;
             Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000;
             vertexPos += change;
 
@@ -24,10 +23,7 @@ public class Deformer : MonoBehaviour
                 float distance = Mathf.Abs(Vector3.Distance(vertices[i], closestPoint));
                 if (Mathf.Abs(Vector3.Distance(vertices[i], closestPoint)) < buffer)
                 {
-                    if (collider.gameObject.name == "Lada Vesta")
-                    {
-                        Debug.Log("Distance within buffer");
-                    }
+                    //Debug.Log(distance); //Use for tuning distance in CollisionChecker script on your mesh. Only shows distances less than distance.
                     vertices[i] = vertexPos;
                 } else if (distance < radius)
                 {
