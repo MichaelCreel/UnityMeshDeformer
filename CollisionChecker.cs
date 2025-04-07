@@ -8,6 +8,8 @@ public class CollisionChecker : MonoBehaviour
 
     [SerializeField] private float distance = 0.5f;
 
+    [SerializeField] private int multiplier = 1;
+
     private Mesh mesh;
 
     private void Start()
@@ -30,7 +32,7 @@ public class CollisionChecker : MonoBehaviour
 
         if ((collision.impulse / Time.fixedDeltaTime).magnitude > 5000)
         {
-            FindObjectOfType<Deformer>().Deform(GetComponent<MeshCollider>(), mesh, collision.contacts, deformResistance, distance, collision.impulse.magnitude / Time.fixedDeltaTime / 10000f / deformResistance);
+            FindObjectOfType<Deformer>().Deform(GetComponent<MeshCollider>(), mesh, collision.contacts, deformResistance, distance, collision.impulse.magnitude / Time.fixedDeltaTime / 10000f / deformResistance, multiplier);
         }
     }
 }
