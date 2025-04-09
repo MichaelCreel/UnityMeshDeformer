@@ -32,7 +32,7 @@ public class CollisionChecker : MonoBehaviour
 
         if ((collision.impulse / Time.fixedDeltaTime).magnitude > 5000)
         {
-            FindObjectOfType<Deformer>().Deform(GetComponent<MeshCollider>(), mesh, collision.contacts, deformResistance, distance, collision.impulse.magnitude / Time.fixedDeltaTime / 10000f / deformResistance, multiplier);
+            FindObjectOfType<Deformer>().Deform(GetComponent<MeshCollider>(), collision, mesh, collision.contacts, deformResistance, distance, collision.impulse.magnitude / Time.fixedDeltaTime / 10000f / deformResistance, multiplier);
         }
     }
 }

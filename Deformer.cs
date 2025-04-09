@@ -1,22 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Deformer : MonoBehaviour
 {
-    public void Deform(MeshCollider collider, Mesh mesh, ContactPoint[] contacts, float deformResistance, float buffer, float radius, int multiplier)
+    public void Deform(MeshCollider collider, Collision collision, Mesh mesh, ContactPoint[] contacts, float deformResistance, float buffer, float radius, int multiplier)
     {
         Vector3[] vertices = new Vector3[mesh.vertices.Length];
         vertices = mesh.vertices;
 
         foreach (ContactPoint contact in contacts)
         {
-            Vector3 vertexPos = collider.ClosestPoint(contact.point);
+            //Vector3 vertexPos = collider.ClosestPoint(contact.point);
+            Vector3 closP = collider.ClosestPoint(contact.point);
 
-            Vector3 closestPoint = vertexPos * (float)multiplier;
+            Vector3 scale = collider.gameObject.transform.localScale;
 
-            Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000;
-            vertexPos += change;
+            Vector3 vertexPos = new Vector3(closP.x / scale.x, closP.y / scale.y, closP.z / scale.z);
+
+            Vector3 closestPoint = vertexPos;
+            Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000 * (float)multiplier;
+            //vertexPos += change;
+            vertexPos += new Vector3(change.x / scale.x, change.y / scale.y, change.z / scale.z);
 
             for (int i = 0; i < vertices.Length; i++)
             {
