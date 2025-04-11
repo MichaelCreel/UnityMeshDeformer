@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 public class Deformer : MonoBehaviour
 {
-    public void Deform(MeshCollider collider, Collision collision, Mesh mesh, ContactPoint[] contacts, float deformResistance, float buffer, float radius, int multiplier)
+    public void Deform(MeshCollider collider, Collision collision, Mesh mesh, ContactPoint[] contacts, float deformResistance, float buffer, float radius, int multiplier, float bufferCut)
     {
         Vector3[] vertices = new Vector3[mesh.vertices.Length];
         vertices = mesh.vertices;
@@ -27,9 +27,9 @@ public class Deformer : MonoBehaviour
             for (int i = 0; i < vertices.Length; i++)
             {
                 float distance = Vector3.Distance(vertices[i], closestPoint);
-                if (distance < buffer)
+                if (distance < buffer && distance > bufferCut)
                 {
-                    //Debug.Log(distance); //Use for tuning distance in CollisionChecker script on your mesh. Only shows distances less than distance.
+                    Debug.Log(distance); //Use for tuning distance in CollisionChecker script on your mesh. Only shows distances less than distance.
                     vertices[i] = vertexPos;
                 } else if (distance < radius)
                 {
