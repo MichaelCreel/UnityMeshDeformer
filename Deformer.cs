@@ -47,17 +47,20 @@ public class Deformer : MonoBehaviour
         collider.sharedMesh = mesh;
     }
 
-    public void DeformVertex(MeshCollider collider, Mesh mesh, ContactPoint contact, float deformResistance, float buffer, float radius)
+    public void DeformVertex(MeshCollider collider, Collision collision, Mesh mesh, ContactPoint contact, float deformResistance, float buffer, float radius, int multiplier, float bufferCut, float outformRadius)
     {
         Vector3[] vertices = new Vector3[mesh.vertices.Length];
         vertices = mesh.vertices;
 
-        Vector3 vertexPos = collider.ClosestPoint(contact.point);
+        Vector3 closP = collider.ClosestPoint(contact.point) - collider.gameObject.transform.position;
+
+        Vector3 scale = collider.gameObject.transform.localScale;
+
+        Vector3 vertexPos = new Vector3(closP.x / scale.x, closP.y / scale.y, closP.z / scale.z);
 
         Vector3 closestPoint = vertexPos;
-
-        Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000;
-        vertexPos += change;
+        Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000 * (float)multiplier;
+        vertexPos += new Vector3(change.x / scale.x, change.y / scale.y, change.z / scale.z);
 
         for (int i = 0; i < vertices.Length; i++)
         {
@@ -79,6 +82,14 @@ public class Deformer : MonoBehaviour
                 mesh.RecalculateBounds();
                 mesh.RecalculateNormals();
                 collider.sharedMesh = null;
+                collider.sharedMesh = mesh;
+                break;
+            } else if (distance < outformRadius)
+            {
+                vertices[i] += change * Mathf.Sin(radius - distance) / 2;
+                mesh.RecalculateBounds();
+                mesh.RecalculateNormals();
+                collider.sharedMaterial = null;
                 collider.sharedMesh = mesh;
                 break;
             }
