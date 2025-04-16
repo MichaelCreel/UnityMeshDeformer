@@ -13,7 +13,9 @@ public class Deformer : MonoBehaviour
 
         foreach (ContactPoint contact in contacts)
         {
-            Vector3 closP = collider.ClosestPoint(contact.point) - collider.gameObject.transform.position;
+            Vector3 closP = (collider.ClosestPoint(contact.point) - collider.gameObject.transform.position);
+
+            Debug.Log(collider.gameObject.transform.rotation);
 
             Vector3 scale = collider.gameObject.transform.localScale;
 
@@ -35,7 +37,7 @@ public class Deformer : MonoBehaviour
                     vertices[i] += change * Mathf.Pow(radius - distance, 2) / Mathf.Pow(radius, 2);
                 } else if (distance < outformRadius)
                 {
-                    vertices[i] += change * Mathf.Sin(radius-distance) / 2;
+                    vertices[i] += change * Mathf.Sin(radius-distance) / 4;
                 }
             }
         }
