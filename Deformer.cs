@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class Deformer : MonoBehaviour
 {
+    //Deform only works when the call is from the deforming object's collision
     public void Deform(MeshCollider collider, Collision collision, Mesh mesh, ContactPoint[] contacts, float deformResistance, float buffer, float radius, int multiplier, float bufferCut, float outformRadius)
     {
         Vector3[] vertices = new Vector3[mesh.vertices.Length];
@@ -12,8 +13,7 @@ public class Deformer : MonoBehaviour
 
         foreach (ContactPoint contact in contacts)
         {
-            //Vector3 vertexPos = collider.ClosestPoint(contact.point);
-            Vector3 closP = collider.ClosestPoint(contact.point);
+            Vector3 closP = collider.ClosestPoint(contact.point) - collider.gameObject.transform.position;
 
             Vector3 scale = collider.gameObject.transform.localScale;
 
@@ -21,7 +21,6 @@ public class Deformer : MonoBehaviour
 
             Vector3 closestPoint = vertexPos;
             Vector3 change = contact.impulse / Time.fixedDeltaTime / deformResistance / -10000 * (float)multiplier;
-            //vertexPos += change;
             vertexPos += new Vector3(change.x / scale.x, change.y / scale.y, change.z / scale.z);
 
             for (int i = 0; i < vertices.Length; i++)
